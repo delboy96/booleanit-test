@@ -3,13 +3,13 @@
 namespace App\Console\Commands;
 
 use App\Models\Category;
+use App\Models\Department;
+use App\Models\Manufacturer;
 use App\Models\Product;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use SplFileObject;
-use function PHPUnit\Framework\fileExists;
-use function PHPUnit\Framework\throwException;
 
 class ImportCsv extends Command
 {
@@ -46,54 +46,39 @@ class ImportCsv extends Command
     {
         $file_path = $this->argument('file');
 
-        $this->info('You have successfully imported data!');
-
         if (!file_exists($file_path)) {
             $this->error('File does not exist.');
             return;
         }
 
-//        try {
-//
-//            $file = new SplFileObject($file_path);
-//            $file->setFlags(SplFileObject::READ_CSV);
-//
-//            foreach ($file as $key => $value) {
-//                list($product_number, $category_name, $department_name, $manufacturer_name, $upc, $sku, $regular_price, $sale_price, $description) = $value;
-//                Category::create(['name' => $category_name]);
-//                Product::create([
-//                    'cat_id' => $cat_id,
-//                    'product_number' => $product_number,
-//                    'category_name' => $category_name,
-//                    'department_name' => $department_name,
-//                    'manufacturer_name' => $manufacturer_name,
-//                    'upc' => $upc,
-//                    'sku' => $sku,
-//                    'regular_price' => $regular_price,
-//                    'sale_price' => $sale_price,
-//                    'description' => $description
-//                ]);
-//            }
-//        } catch (Exception $e) {
-//            dd($e);
-//        }
+        try {
+            $file = new SplFileObject($file_path);
+            $file->setFlags(SplFileObject::READ_CSV | SplFileObject::SKIP_EMPTY | SplFileObject::READ_AHEAD | SplFileObject::DROP_NEW_LINE);
 
-//        if (file_exists($path)) {
-//            try {
-//                $file = new SplFileObject($path);
-//                $file->setFlags(SplFileObject::READ_CSV);
-//
-//                foreach ($file as $key => $value) {
-//                    list($product_number, $category_name, $department_name, $manufacturer_name, $upc, $sku, $regular_price, $sale_price, $description) = $value;
-//                    Category::create(['name' => $category_name]);
-//                    Product::create(['cat_id' => , 'product_number' => $product_number, 'category_name' => $category_name, 'department_name' => $department_name, 'manufacturer_name' => $manufacturer_name, 'upc' => $upc, 'sku' => $sku, 'regular_price' => $regular_price, 'sale_price' => $sale_price, 'description' => $description]);
-//                }
-//
-//                print('Data saved!');
-//            } catch (Exception $e) {
-//                Log::error($e->getMessage());
-//                print ('Error.');
-//            }
-//        }
+            foreach ($file as $key => $value) {
+                list($product_number, $category_name, $department_name, $manufacturer_name, $upc, $sku, $regular_price, $sale_price, $description) = $value;
+                $cat_id = Category::firstOrCreate(['name' => $category_name])->id;
+                $dep_id = Department::firstOrCreate(['name' => $department_name])->id;
+                $man_id = Manufacturer::firstOrCreate(['name' => $manufacturer_name])->id;
+
+                Product::create([
+                    'cat_id' => $cat_id,
+                    'dep_id' => $dep_id,
+                    'man_id' => $man_id,
+                    'product_number' => $product_number,
+                    'upc' => $upc,
+                    'sku' => $sku,
+                    'regular_price' => $regular_price,
+                    'sale_price' => $sale_price,
+                    'description' => $description
+                ]);
+            }
+
+            $this->info('You have successfully imported data!');
+
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            $this->error('Could not import data');
+        }
     }
 }

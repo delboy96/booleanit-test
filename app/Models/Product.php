@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,22 +22,25 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float $regular_price
  * @property float $sale_price
  * @property string $description
- * @property-read \App\Models\Category $category
- * @method static \Illuminate\Database\Eloquent\Builder|Product newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Product newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Product query()
- * @method static \Illuminate\Database\Eloquent\Builder|Product whereCatId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Product whereCategoryName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Product whereDepartmentName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Product whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Product whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Product whereManufacturerName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Product whereProductNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Product whereRegularPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Product whereSalePrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Product whereSku($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Product whereUpc($value)
- * @mixin \Eloquent
+ * @property-read Category $category
+ * @method static Builder|Product newModelQuery()
+ * @method static Builder|Product newQuery()
+ * @method static Builder|Product query()
+ * @method static Builder|Product whereCatId($value)
+ * @method static Builder|Product whereDescription($value)
+ * @method static Builder|Product whereId($value)
+ * @method static Builder|Product whereProductNumber($value)
+ * @method static Builder|Product whereRegularPrice($value)
+ * @method static Builder|Product whereSalePrice($value)
+ * @method static Builder|Product whereSku($value)
+ * @method static Builder|Product whereUpc($value)
+ * @mixin Eloquent
+ * @property int $dep_id
+ * @property int $man_id
+ * @property-read Department $department
+ * @property-read Manufacturer $manufacturer
+ * @method static Builder|Product whereDepId($value)
+ * @method static Builder|Product whereManId($value)
  */
 class Product extends Model
 {
@@ -45,7 +50,7 @@ class Product extends Model
 
     protected $guarded = ['id'];
 
-    protected $fillable = ['cat_id', 'product_number', 'category_name', 'department_name', 'manufacturer_name', 'upc', 'sku', 'regular_price', 'sale_price', 'description'];
+    protected $fillable = ['cat_id', 'dep_id', 'man_id', 'product_number', 'upc', 'sku', 'regular_price', 'sale_price', 'description'];
 
 
     /**
@@ -54,5 +59,21 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class, 'cat_id');
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'dep_id');
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function manufacturer()
+    {
+        return $this->belongsTo(Manufacturer::class, 'man_id');
     }
 }

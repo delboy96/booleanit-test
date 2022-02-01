@@ -16,12 +16,11 @@ class CreateProductsTable extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->increments('id');
             $table->tinyInteger('cat_id')->unsigned();
+            $table->tinyInteger('dep_id')->unsigned();
+            $table->tinyInteger('man_id')->unsigned();
             $table->string('product_number');
-            $table->string('category_name');
-            $table->string('department_name');
-            $table->string('manufacturer_name');
-            $table->float('upc');
-            $table->float('sku');
+            $table->double('upc');
+            $table->double('sku');
             $table->float('regular_price');
             $table->float('sale_price');
             $table->longText('description');
@@ -29,6 +28,12 @@ class CreateProductsTable extends Migration
             $table->foreign('cat_id')
                 ->references('id')
                 ->on('categories');
+            $table->foreign('dep_id')
+                ->references('id')
+                ->on('departments');
+            $table->foreign('man_id')
+                ->references('id')
+                ->on('manufacturers');
         });
     }
 

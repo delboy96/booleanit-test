@@ -8,18 +8,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\Category
+ * App\Models\Department
  *
  * @property int $id
  * @property string $name
- * @method static Builder|Category newModelQuery()
- * @method static Builder|Category newQuery()
- * @method static Builder|Category query()
- * @method static Builder|Category whereId($value)
- * @method static Builder|Category whereName($value)
+ * @method static Builder|Department newModelQuery()
+ * @method static Builder|Department newQuery()
+ * @method static Builder|Department query()
+ * @method static Builder|Department whereId($value)
+ * @method static Builder|Department whereName($value)
  * @mixin Eloquent
  */
-class Category extends Model
+class Department extends Model
 {
     use HasFactory;
 
@@ -28,5 +28,4 @@ class Category extends Model
     protected $guarded = ['id'];
 
     protected $fillable = ['name'];
-
 }
