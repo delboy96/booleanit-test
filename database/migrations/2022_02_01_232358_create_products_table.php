@@ -18,7 +18,7 @@ class CreateProductsTable extends Migration
             $table->tinyInteger('cat_id')->unsigned();
             $table->tinyInteger('dep_id')->unsigned();
             $table->tinyInteger('man_id')->unsigned();
-            $table->string('product_number');
+            $table->string('product_number')->unique();;
             $table->double('upc');
             $table->double('sku');
             $table->float('regular_price');
@@ -27,7 +27,8 @@ class CreateProductsTable extends Migration
 
             $table->foreign('cat_id')
                 ->references('id')
-                ->on('categories');
+                ->on('categories')
+                ->onDelete('cascade');
             $table->foreign('dep_id')
                 ->references('id')
                 ->on('departments');
