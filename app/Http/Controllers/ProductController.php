@@ -108,17 +108,17 @@ class ProductController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Product $product
-     * @return void
+     * @return JsonResponse
      */
     public function destroy(Product $product)
     {
         try {
-            $delete = Product::destroy($product->id);
-            echo('Product successfully deleted!');
+            Product::destroy($product->id);
+            return response()->json(null, 204);
 
         } catch (Exception $e) {
             Log::error($e->getMessage());
-            echo('Error.');
+            return response()->json(['message' => 'Could not delete product.'], 500);
         }
     }
 }
