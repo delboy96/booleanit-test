@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Product;
 use App\Http\Requests\UpdateProductRequest;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProductController extends Controller
 {
@@ -32,6 +35,42 @@ class ProductController extends Controller
     {
         $data = Product::whereCatId($cat_id)->get();
         return response()->json($data, 200);
+    }
+
+    /**
+     * @param int $cat_id
+     * @return StreamedResponse
+     */
+    public function exportCsv (int $cat_id)
+    {
+        $cat_name = Category::find($cat_id)->name;
+        $cat_name_alphanum = preg_replace("/[^A-Za-z0-9]/", '_', $cat_name);
+        $timestamp = Carbon::now()->format('Y_m_d-H_i');
+        $filename = $cat_name_alphanum . '_' . $timestamp;
+
+        $headers = [
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
+            ,   'Content-type'        => 'text/csv'
+            ,   'Content-Disposition' => 'attachment; filename='.$filename.'.csv'
+            ,   'Expires'             => '0'
+            ,   'Pragma'              => 'public'
+        ];
+
+        $list = Product::whereCatId($cat_id)->get()->toArray();
+
+        # add headers for each column in the CSV download
+        array_unshift($list, array_keys($list[0]));
+
+        $callback = function() use ($list)
+        {
+            $FH = fopen('php://output', 'w');
+            foreach ($list as $row) {
+                fputcsv($FH, $row);
+            }
+            fclose($FH);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     /**

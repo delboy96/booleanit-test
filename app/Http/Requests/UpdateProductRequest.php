@@ -24,9 +24,9 @@ class UpdateProductRequest extends FormRequest
     public function rules()
     {
         return [
-            'cat_id' => 'required',
-            'dep_id' => 'required',
-            'man_id' => 'required',
+            'cat_id' => 'required|integer|numeric',
+            'dep_id' => 'required|integer|numeric',
+            'man_id' => 'required|integer|numeric',
             'product_number' => 'required',
             'upc' => 'required',
             'sku' => 'required',

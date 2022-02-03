@@ -18,3 +18,5 @@ use Illuminate\Support\Facades\Route;
 // Resource routes
 Route::resource('categories', CategoryController::class)->except('show', 'create', 'store');
 Route::resource('products', ProductController::class)->except('create', 'store');
+// Export .csv
+Route::get('/exportcsv/{cat_id}', [ProductController::class, 'exportCsv']);
