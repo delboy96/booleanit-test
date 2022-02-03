@@ -9,6 +9,7 @@ use App\Models\Product;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use LimitIterator;
 use SplFileObject;
 
 class ImportCsv extends Command
@@ -54,8 +55,9 @@ class ImportCsv extends Command
         try {
             $file = new SplFileObject($file_path);
             $file->setFlags(SplFileObject::READ_CSV | SplFileObject::SKIP_EMPTY | SplFileObject::READ_AHEAD | SplFileObject::DROP_NEW_LINE);
+            $it = new LimitIterator($file, 1);
 
-            foreach ($file as $key => $value) {
+            foreach ($it as $key => $value) {
                 list($product_number, $category_name, $department_name, $manufacturer_name, $upc, $sku, $regular_price, $sale_price, $description) = $value;
                 $cat_id = Category::firstOrCreate(['name' => $category_name])->id;
                 $dep_id = Department::firstOrCreate(['name' => $department_name])->id;
